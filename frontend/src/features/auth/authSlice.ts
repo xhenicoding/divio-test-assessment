@@ -1,42 +1,42 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 interface AuthState {
   token: string | null;
-  email: string | null;
+  username: string | null;
 }
 
 const initialState: AuthState = {
   token: null,
-  email: null,
+  username: null,
 };
 
 // Async thunk for logging in
 export const login = createAsyncThunk(
-  'auth/login',
-  async ({ email, password }: { email: string; password: string }) => {
-    const response = await axios.post('/api/auth/token', { email, password });
-    return { token: response.data.access, email };
+  "auth/login",
+  async ({ username, password }: { username: string; password: string }) => {
+    const response = await axios.post("/api/auth/", { username, password });
+    return { token: response.data.access, username };
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logout: (state) => {
       state.token = null;
-      state.email = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
+      state.username = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
     },
   },
   extraReducers: (builder) => {
     builder.addCase(login.fulfilled, (state, action) => {
       state.token = action.payload.token;
-      state.email = action.payload.email;
-      localStorage.setItem('token', action.payload.token);
-      localStorage.setItem('email', action.payload.email);
+      state.username = action.payload.username;
+      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("username", action.payload.username);
     });
   },
 });
