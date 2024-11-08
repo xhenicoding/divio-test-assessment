@@ -23,6 +23,6 @@ class SelectProductView(generics.UpdateAPIView):
 
     def post(self, request, *args, **kwargs):
         product = self.get_object()
-        product.selected = True
+        product.selected = not product.selected
         product.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response({'status': 'selection updated', 'selected': product.selected}, status=status.HTTP_200_OK)
