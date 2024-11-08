@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { fetchProducts, selectProduct } from '../features/products/productsSlice';
+import { fetchProducts, selectProduct, setQuery } from '../features/products/productsSlice';
 import { RootState } from '../app/store';
 import { useAppDispatch } from '../app/hooks';
 
 const ProductTable = () => {
   const dispatch = useAppDispatch();
+
   const products = useSelector((state: RootState) => state.products.items);
-  const [query, setQuery] = useState('');
+  const savedQuery = useSelector((state: RootState) => state.products.query);
+
   const [sortColumn, setSortColumn] = useState('id');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
+  const [query, setLocalQuery] = useState(savedQuery);
 
   useEffect(() => {
-    dispatch(fetchProducts({ query, sort: `${sortOrder === 'asc' ? '' : '-'}${sortColumn}` }));
-  }, [query, sortColumn, sortOrder, dispatch]);
+    dispatch(fetchProducts({ query: savedQuery, sort: `${sortOrder === 'asc' ? '' : '-'}${sortColumn}` }));
+  }, [savedQuery, sortColumn, sortOrder, dispatch]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -22,6 +26,12 @@ const ProductTable = () => {
       setSortColumn(column);
       setSortOrder('asc');
     }
+  };
+
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setLocalQuery(newQuery);
+    dispatch(setQuery(newQuery));
   };
 
   const handleSelect = (id: number) => {
@@ -34,7 +44,7 @@ const ProductTable = () => {
         type="text"
         placeholder="Search..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleQueryChange}
         className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
       />
       <table className="w-full border-collapse">

@@ -7,8 +7,8 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  token: null,
-  username: null,
+  token: localStorage.getItem("token"),
+  username: localStorage.getItem("username"),
 };
 
 // Async thunk for logging in
@@ -16,6 +16,8 @@ export const login = createAsyncThunk(
   "auth/login",
   async ({ username, password }: { username: string; password: string }) => {
     const response = await axios.post("/api/auth/", { username, password });
+    localStorage.setItem("token", response.data.access);
+    localStorage.setItem("username", username);
     return { token: response.data.access, username };
   }
 );
@@ -35,8 +37,6 @@ const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.token = action.payload.token;
       state.username = action.payload.username;
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("username", action.payload.username);
     });
   },
 });
