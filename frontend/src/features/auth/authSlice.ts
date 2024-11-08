@@ -31,6 +31,7 @@ const authSlice = createSlice({
       state.username = null;
       localStorage.removeItem("token");
       localStorage.removeItem("username");
+      localStorage.removeItem("products");
       localStorage.removeItem("query");
       localStorage.removeItem("sortColumn");
       localStorage.removeItem("sortOrder");
